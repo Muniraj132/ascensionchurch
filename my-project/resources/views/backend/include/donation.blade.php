@@ -1,0 +1,180 @@
+@extends('backend.layouts.subpage')
+
+@section('content')
+
+  
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Donation</h1>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>
+                  <i class="fas fa-book"></i>
+               {{ $donate->count() }}
+              </h3>
+                <p>Today Contribution</p></a>
+              </div>
+            </div>
+          </div>
+ 
+          <div class="col-lg-3 col-6">
+            <a href="{{url('week')}}">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>
+                   <i class="fas fa-rupee-sign"></i>{{ $week }}
+                </h3>
+                <p>Contribution  (WEEKLY)</p>
+              </div>
+            </div></a>
+          </div>
+         
+          <div class="col-lg-3 col-6">
+            <a href="{{url('month')}}">
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3> <i class="fas fa-rupee-sign"></i>{{ $month }}</h3>
+                <p>Contribution  (MONTHLY)</p>
+              </div>
+            </div>
+          </a>
+          </div>
+          <div class="col-lg-3 col-6">
+            <a href="{{url('year')}}">
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3> <i class="fas fa-rupee-sign"></i>{{ $year }}</h3>
+                <p>Contribution  (ANNUAL)</p>
+              </div>
+            </div>
+          </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+   
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+
+</head>
+
+<body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>  
+
+<style>  
+th, td {  
+    text - align: center;  
+    border: 1 px solid black;  
+    border - collapse: collapse;  
+} 
+</style> 
+
+<div class="container">
+    <div class="row" >
+         <div class="card-body">
+              <table id="simple_table" class="table table-bordered table-striped">
+                    <thead>
+                        <div class="d-flex justify-content-end mb-4">
+                          <h4 style="margin-right: 640px;">Today Contribution</h4><input type="button" class="btn btn-primary" onclick="generate()" value="Export To PDF">
+                       </div> 
+                        <tr>
+                            <th class="bg-info">No</th>
+                            <th class="bg-info">Name</th>
+                            <th class="bg-info">Donation purpose</th>
+                            <th class="bg-info">Place</th>
+                            <th class="bg-info">Mobile Number</th>
+                            <th class="bg-info">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($donate as $key=> $value)
+                           <tr>    
+                              <td class="text-center">{{++$key}}</td>
+                              <td class="text-left">{{$value->name}}</td>     
+                              <td class="text-left">{{$value->udf4}}</td>
+                              <td class="text-left">{{$value->address}}</td>
+                              <td class="text-left">{{$value->mobile}}</td> 
+                              <td class="text-left">{{$value->amt}}</td>
+                          </tr>
+                      @endforeach
+                    </tbody>
+              </table>
+          </div>
+      </div>
+ </div>
+
+</body>
+
+<script>
+    $('table').DataTable();
+</script>
+
+<script type="text/javascript">
+
+      function generate(e) {  
+          var doc = new jsPDF('p', 'pt', 'letter');  
+          var htmlstring = '';  
+          var tempVarToCheckPageHeight = 0;  
+          var pageHeight = 0;  
+          var ExportDate = moment().format("DD/MM/YYYY hh:mm A");
+          pageHeight = doc.internal.pageSize.height;  
+          specialElementHandlers = {  
+              '#bypassme': function(element, renderer) {  
+                  return true  
+              }  
+          };  
+          margins = {  
+              top: 20,  
+              bottom: 30,  
+              left: 20,  
+              right: 10,  
+              width: 60  
+          };  
+          var y = 20;  
+          doc.setLineWidth(2);  
+          doc.text(200, y = y + 30, "Today Donation List"); 
+          doc.setTextColor(255,0,0);
+          doc.text(40, 30, "Ascension Church");
+          doc.text(430, 15, ExportDate);
+          doc.autoTable({  
+              html: '#simple_table',  
+              startY: 60,  
+              styles: {  
+                  minCellHeight: 10  
+              }  
+          })  
+          doc.save('donation.pdf');  
+      }  
+</script> 
+
+@endsection
+
+
+
+  
